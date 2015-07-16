@@ -32,7 +32,7 @@ import edu.stanford.nlp.semgraph.*;
  */
 public class TestClearNLP {
 	static Logger log = LogManager.getLogger(Test.class);
-	static String path = "resources/ClearNLP_default.xml";
+	static String path = "resources/ClearNLP.xml";
 
 	/**
 	 * Tests for configuration

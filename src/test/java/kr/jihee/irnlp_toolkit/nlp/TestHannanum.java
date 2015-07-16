@@ -24,7 +24,7 @@ import kr.jihee.text_toolkit.lang.JString;
  */
 public class TestHannanum {
 	static Logger log = LogManager.getLogger(Test.class);
-	static String path = "resources/Hannanum_manual.xml";
+	static String path = "resources/Hannanum.xml";
 
 	/**
 	 * Tests for configuration

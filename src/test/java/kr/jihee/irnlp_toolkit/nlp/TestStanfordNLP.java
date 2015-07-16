@@ -39,7 +39,7 @@ import edu.stanford.nlp.util.*;
  */
 public class TestStanfordNLP {
 	static Logger log = LogManager.getLogger(Test.class);
-	static String path = "resources/StanfordNLP_default.xml";
+	static String path = "resources/StanfordNLP.xml";
 
 	/**
 	 * Tests for configuration

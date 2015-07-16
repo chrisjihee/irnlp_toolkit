@@ -20,7 +20,7 @@ import org.junit.*;
  */
 public class TestOpenNLP {
 	static Logger log = LogManager.getLogger(Test.class);
-	static String path = "resources/OpenNLP_default.xml";
+	static String path = "resources/OpenNLP.xml";
 
 	/**
 	 * Tests for configuration
