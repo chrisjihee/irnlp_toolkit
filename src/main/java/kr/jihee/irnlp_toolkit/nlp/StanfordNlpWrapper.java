@@ -6,33 +6,29 @@ package kr.jihee.irnlp_toolkit.nlp;
 import java.io.*;
 import java.util.*;
 
-import kr.jihee.text_toolkit.io.*;
-import kr.jihee.text_toolkit.job.*;
-import kr.jihee.text_toolkit.lang.*;
-
 import com.google.common.collect.*;
 
 import edu.stanford.nlp.dcoref.*;
-import edu.stanford.nlp.dcoref.CorefChain.CorefMention;
-import edu.stanford.nlp.dcoref.CorefCoreAnnotations.CorefChainAnnotation;
-import edu.stanford.nlp.dcoref.CorefCoreAnnotations.CorefClusterIdAnnotation;
+import edu.stanford.nlp.dcoref.CorefChain.*;
+import edu.stanford.nlp.dcoref.CorefCoreAnnotations.*;
 import edu.stanford.nlp.ling.*;
-import edu.stanford.nlp.ling.CoreAnnotations.BeginIndexAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.EndIndexAnnotation;
-import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.*;
 import edu.stanford.nlp.parser.*;
 import edu.stanford.nlp.parser.lexparser.*;
 import edu.stanford.nlp.parser.lexparser.Options;
 import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.process.*;
 import edu.stanford.nlp.semgraph.*;
-import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.*;
 import edu.stanford.nlp.tagger.maxent.*;
 import edu.stanford.nlp.time.*;
 import edu.stanford.nlp.trees.*;
-import edu.stanford.nlp.trees.GrammaticalRelation.Language;
-import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
+import edu.stanford.nlp.trees.GrammaticalRelation.*;
+import edu.stanford.nlp.trees.TreeCoreAnnotations.*;
 import edu.stanford.nlp.util.*;
+import kr.jihee.text_toolkit.io.*;
+import kr.jihee.text_toolkit.job.*;
+import kr.jihee.text_toolkit.lang.*;
 
 /**
  * Wrapper of Stanford CoreNLP 3.5.0<br>
@@ -136,31 +132,37 @@ public class StanfordNlpWrapper {
 		prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
 	}
 
-	public void loadTokFactory() {
+	public StanfordNlpWrapper loadTokFactory() {
 		tokenizerFactory = PTBTokenizer.factory();
+		return this;
 	}
 
-	public void loadPosTagger() {
+	public StanfordNlpWrapper loadPosTagger() {
 		tagger = new MaxentTagger(prop.getProperty("pos.model"));
+		return this;
 	}
 
-	public void loadLexParser() {
+	public StanfordNlpWrapper loadLexParser() {
 		parser = LexicalizedParser.getParserFromFile(prop.getProperty("parse.model"), new Options());
 		parserK = new ExhaustivePCFGParser(parser.bg, parser.ug, parser.getLexicon(), parser.getOp(), parser.stateIndex, parser.wordIndex, parser.tagIndex);
+		return this;
 	}
 
-	public void loadAll() {
+	public StanfordNlpWrapper loadAll() {
 		annotator = new StanfordCoreNLP(prop);
+		return this;
 	}
 
-	public void loadAll(String annotator_spec) {
+	public StanfordNlpWrapper loadAll(String annotator_spec) {
 		prop.setProperty("annotators", annotator_spec);
 		annotator = new StanfordCoreNLP(prop);
+		return this;
 	}
 
-	public void loadTimeAnnotator() throws Exception {
+	public StanfordNlpWrapper loadTimeAnnotator() throws Exception {
 		System.setProperty("pos.model", prop.getProperty("pos.model"));
 		normalizer = SUTimeMain.getPipeline(prop, true);
+		return this;
 	}
 
 	public List<Word> tokenize(String text) {

@@ -3,25 +3,19 @@
  */
 package kr.jihee.irnlp_toolkit.nlp;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.io.*;
+import java.util.*;
 
-import kr.ac.kaist.swrc.jhannanum.comm.Eojeol;
-import kr.ac.kaist.swrc.jhannanum.comm.PlainSentence;
-import kr.ac.kaist.swrc.jhannanum.comm.Sentence;
-import kr.ac.kaist.swrc.jhannanum.exception.ResultTypeException;
-import kr.ac.kaist.swrc.jhannanum.hannanum.Workflow;
-import kr.ac.kaist.swrc.jhannanum.plugin.MajorPlugin.MorphAnalyzer.ChartMorphAnalyzer.ChartMorphAnalyzer;
-import kr.ac.kaist.swrc.jhannanum.plugin.MajorPlugin.PosTagger.HmmPosTagger.HMMTagger;
-import kr.ac.kaist.swrc.jhannanum.plugin.SupplementPlugin.MorphemeProcessor.UnknownMorphProcessor.UnknownProcessor;
-import kr.ac.kaist.swrc.jhannanum.plugin.SupplementPlugin.PlainTextProcessor.SentenceSegmentor.SentenceSegmentor;
-import kr.ac.kaist.swrc.jhannanum.plugin.SupplementPlugin.PosProcessor.SimplePOSResult22.SimplePOSResult22;
+import kr.ac.kaist.swrc.jhannanum.comm.*;
+import kr.ac.kaist.swrc.jhannanum.exception.*;
+import kr.ac.kaist.swrc.jhannanum.hannanum.*;
+import kr.ac.kaist.swrc.jhannanum.plugin.MajorPlugin.MorphAnalyzer.ChartMorphAnalyzer.*;
+import kr.ac.kaist.swrc.jhannanum.plugin.MajorPlugin.PosTagger.HmmPosTagger.*;
+import kr.ac.kaist.swrc.jhannanum.plugin.SupplementPlugin.MorphemeProcessor.UnknownMorphProcessor.*;
+import kr.ac.kaist.swrc.jhannanum.plugin.SupplementPlugin.PlainTextProcessor.SentenceSegmentor.*;
+import kr.ac.kaist.swrc.jhannanum.plugin.SupplementPlugin.PosProcessor.SimplePOSResult22.*;
 import kr.jihee.text_toolkit.io.*;
-import kr.jihee.text_toolkit.lang.JString;
+import kr.jihee.text_toolkit.lang.*;
 
 /**
  * Wrapper of HanNanum 0.8.4<br>
@@ -50,31 +44,34 @@ public class HannanumWrapper {
 	 * 
 	 * @throws Exception
 	 */
-	public void loadSentDetector() throws Exception {
+	public HannanumWrapper loadSentDetector() throws Exception {
 		detector = new Workflow();
 		detector.appendPlainTextProcessor(new SentenceSegmentor(), null);
 		detector.activateWorkflow(true);
+		return this;
 	}
 
 	/**
 	 * 
 	 * @throws Exception
 	 */
-	public void loadPosTagger() throws Exception {
+	public HannanumWrapper loadPosTagger() throws Exception {
 		tagger = new Workflow();
 		tagger.setMorphAnalyzer(new ChartMorphAnalyzer(), prop.getProperty("morp.json"));
 		tagger.appendMorphemeProcessor(new UnknownProcessor(), null);
 		tagger.setPosTagger(new HMMTagger(), prop.getProperty("pos.json"));
 		tagger.appendPosProcessor(new SimplePOSResult22(), null);
 		tagger.activateWorkflow(true);
+		return this;
 	}
 
 	/**
 	 * 
 	 * @throws Exception
 	 */
-	public void loadAll() throws Exception {
+	public HannanumWrapper loadAll() throws Exception {
 		loadAll("ssplit, pos");
+		return this;
 	}
 
 	/**
@@ -82,12 +79,13 @@ public class HannanumWrapper {
 	 * @param annotator_spec
 	 * @throws Exception
 	 */
-	public void loadAll(String annotator_spec) throws Exception {
+	public HannanumWrapper loadAll(String annotator_spec) throws Exception {
 		List<String> annotators = Arrays.asList(annotator_spec.toLowerCase().replaceAll("\\s", "").split(","));
 		if (annotators.contains("ssplit"))
 			loadSentDetector();
 		if (annotators.contains("pos"))
 			loadPosTagger();
+		return this;
 	}
 
 	/**

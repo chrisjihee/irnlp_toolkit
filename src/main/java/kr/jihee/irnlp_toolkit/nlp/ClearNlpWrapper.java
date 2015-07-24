@@ -6,13 +6,8 @@ package kr.jihee.irnlp_toolkit.nlp;
 import java.io.*;
 import java.util.*;
 import java.util.stream.*;
-import java.util.stream.Stream.Builder;
+import java.util.stream.Stream.*;
 import java.util.zip.*;
-
-import kr.jihee.text_toolkit.io.*;
-import kr.jihee.text_toolkit.lang.JList.GList;
-import kr.jihee.text_toolkit.lang.*;
-import kr.jihee.text_toolkit.lang.JObject.StrCaster;
 
 import com.clearnlp.component.dep.*;
 import com.clearnlp.component.pos.*;
@@ -29,6 +24,10 @@ import com.clearnlp.util.pair.*;
 
 import edu.stanford.nlp.ling.*;
 import edu.stanford.nlp.trees.*;
+import kr.jihee.text_toolkit.io.*;
+import kr.jihee.text_toolkit.lang.*;
+import kr.jihee.text_toolkit.lang.JList.*;
+import kr.jihee.text_toolkit.lang.JObject.*;
 
 /**
  * Wrapper of ClearNLP 2.0.2<br>
@@ -76,47 +75,53 @@ public class ClearNlpWrapper {
 		prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
 	}
 
-	public void loadTokenizer() throws IOException {
+	public ClearNlpWrapper loadTokenizer() throws IOException {
 		tokenizer = NLPGetter.getTokenizer(AbstractReader.LANG_EN);
+		return this;
 	}
 
-	public void loadSentDetector() throws IOException {
+	public ClearNlpWrapper loadSentDetector() throws IOException {
 		detector = NLPGetter.getSegmenter(AbstractReader.LANG_EN, tokenizer);
+		return this;
 	}
 
-	public void loadPosTagger() throws IOException {
+	public ClearNlpWrapper loadPosTagger() throws IOException {
 		String model_path = prop.getProperty("pos.model");
 		if (!model_path.toLowerCase().endsWith(".zip"))
 			tagger = (AbstractPOSTagger) NLPGetter.getComponent(model_path, AbstractReader.LANG_EN, NLPMode.MODE_POS);
 		else
 			tagger = (AbstractPOSTagger) NLPGetter.getComponent(new ZipFile(model_path), AbstractReader.LANG_EN, NLPMode.MODE_POS);
+		return this;
 	}
 
-	public void loadDepParser() throws IOException {
+	public ClearNlpWrapper loadDepParser() throws IOException {
 		String model_path = prop.getProperty("dep.model");
 		if (!model_path.toLowerCase().endsWith(".zip"))
 			parser = (AbstractDEPParser) NLPGetter.getComponent(model_path, AbstractReader.LANG_EN, NLPMode.MODE_DEP);
 		else
 			parser = (AbstractDEPParser) NLPGetter.getComponent(new ZipFile(model_path), AbstractReader.LANG_EN, NLPMode.MODE_DEP);
+		return this;
 	}
 
-	private void loadPredIdentifier() throws IOException {
+	private ClearNlpWrapper loadPredIdentifier() throws IOException {
 		String model_path = prop.getProperty("pred.model");
 		if (!model_path.toLowerCase().endsWith(".zip"))
 			identifier = (AbstractPredicateIdentifier) NLPGetter.getComponent(model_path, AbstractReader.LANG_EN, NLPMode.MODE_PRED);
 		else
 			identifier = (AbstractPredicateIdentifier) NLPGetter.getComponent(new ZipFile(model_path), AbstractReader.LANG_EN, NLPMode.MODE_PRED);
+		return this;
 	}
 
-	private void loadRoleClassifier() throws IOException {
+	private ClearNlpWrapper loadRoleClassifier() throws IOException {
 		String model_path = prop.getProperty("role.model");
 		if (!model_path.toLowerCase().endsWith(".zip"))
 			classifier = (AbstractRolesetClassifier) NLPGetter.getComponent(model_path, AbstractReader.LANG_EN, NLPMode.MODE_ROLE);
 		else
 			classifier = (AbstractRolesetClassifier) NLPGetter.getComponent(new ZipFile(model_path), AbstractReader.LANG_EN, NLPMode.MODE_ROLE);
+		return this;
 	}
 
-	public void loadSrlLabeler() throws IOException {
+	public ClearNlpWrapper loadSrlLabeler() throws IOException {
 		loadPredIdentifier();
 		loadRoleClassifier();
 		String model_path = prop.getProperty("srl.model");
@@ -124,13 +129,15 @@ public class ClearNlpWrapper {
 			labeler = (AbstractSRLabeler) NLPGetter.getComponent(model_path, AbstractReader.LANG_EN, NLPMode.MODE_SRL);
 		else
 			labeler = (AbstractSRLabeler) NLPGetter.getComponent(new ZipFile(model_path), AbstractReader.LANG_EN, NLPMode.MODE_SRL);
+		return this;
 	}
 
-	public void loadAll() throws IOException {
+	public ClearNlpWrapper loadAll() throws IOException {
 		loadAll("tokenize, ssplit, pos, parse, srl");
+		return this;
 	}
 
-	public void loadAll(String annotator_spec) throws IOException {
+	public ClearNlpWrapper loadAll(String annotator_spec) throws IOException {
 		List<String> annotators = Arrays.asList(annotator_spec.toLowerCase().replaceAll("\\s", "").split(","));
 		if (annotators.contains("tokenize"))
 			loadTokenizer();
@@ -142,6 +149,7 @@ public class ClearNlpWrapper {
 			loadDepParser();
 		if (annotators.contains("srl"))
 			loadSrlLabeler();
+		return this;
 	}
 
 	public List<List<String>> detect(String text) {

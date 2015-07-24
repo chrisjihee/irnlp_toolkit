@@ -37,42 +37,47 @@ public class OpenNlpWrapper {
 		prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
 	}
 
-	public void loadSentDetector() throws IOException {
+	public OpenNlpWrapper loadSentDetector() throws IOException {
 		String model_path = prop.getProperty("sent.model");
 		System.err.printf("Loading sentence detector from %s ... ", model_path);
 		detector = new SentenceDetectorME(new SentenceModel(JFile.asStream(model_path)));
 		System.err.println("done");
+		return this;
 	}
 
-	public void loadTokenizer() throws IOException {
+	public OpenNlpWrapper loadTokenizer() throws IOException {
 		String model_path = prop.getProperty("tok.model");
 		System.err.printf("Loading tokenizer from %s ... ", model_path);
 		tokenizer = new TokenizerME(new TokenizerModel(JFile.asStream(model_path)));
 		System.err.println("done");
+		return this;
 	}
 
-	public void loadPosTagger() throws IOException {
+	public OpenNlpWrapper loadPosTagger() throws IOException {
 		String model_path = prop.getProperty("pos.model");
 		System.err.printf("Loading POS tagger from %s ... ", model_path);
 		tagger = new POSTaggerME(new POSModel(JFile.asStream(model_path)));
 		System.err.println("done");
+		return this;
 	}
 
-	public void loadChunker() throws IOException {
+	public OpenNlpWrapper loadChunker() throws IOException {
 		String model_path = prop.getProperty("chunk.model");
 		System.err.printf("Loading phrase chunker from %s ... ", model_path);
 		chunker = new ChunkerME(new ChunkerModel(JFile.asStream(model_path)));
 		System.err.println("done");
+		return this;
 	}
 
-	public void loadLexParser() throws IOException {
+	public OpenNlpWrapper loadLexParser() throws IOException {
 		String model_path = prop.getProperty("parse.model");
 		System.err.printf("Loading parser from %s ... ", model_path);
 		parser = ParserFactory.create(new ParserModel(JFile.asStream(model_path)));
 		System.err.println("done");
+		return this;
 	}
 
-	public void loadEntityRecognizers() throws IOException {
+	public OpenNlpWrapper loadEntityRecognizers() throws IOException {
 		recognizers = new ArrayList<NameFinderME>();
 		for (String key : Arrays.asList("ner.person.model", "ner.organization.model", "ner.location.model", "ner.date.model", "ner.time.model", "ner.money.model", "ner.percentage.model")) {
 			String model_path = prop.getProperty(key);
@@ -80,13 +85,15 @@ public class OpenNlpWrapper {
 			recognizers.add(new NameFinderME(new TokenNameFinderModel(JFile.asStream(model_path))));
 			System.err.println("done");
 		}
+		return this;
 	}
 
-	public void loadAll() throws IOException {
+	public OpenNlpWrapper loadAll() throws IOException {
 		loadAll("ssplit, tokenize, pos, chunk, parse, ner");
+		return this;
 	}
 
-	public void loadAll(String annotator_spec) throws IOException {
+	public OpenNlpWrapper loadAll(String annotator_spec) throws IOException {
 		List<String> annotators = Arrays.asList(annotator_spec.toLowerCase().replaceAll("\\s", "").split(","));
 		if (annotators.contains("ssplit"))
 			loadSentDetector();
@@ -100,6 +107,7 @@ public class OpenNlpWrapper {
 			loadLexParser();
 		if (annotators.contains("ner"))
 			loadEntityRecognizers();
+		return this;
 	}
 
 	public String[] tokenize(String text) {

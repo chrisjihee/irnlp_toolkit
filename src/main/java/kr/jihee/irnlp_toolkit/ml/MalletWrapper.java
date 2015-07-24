@@ -5,13 +5,13 @@ package kr.jihee.irnlp_toolkit.ml;
 
 import java.io.*;
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.Map.*;
 import java.util.function.*;
 import java.util.regex.*;
 import java.util.stream.*;
 
 import cc.mallet.fst.*;
-import cc.mallet.fst.SimpleTagger.SimpleTaggerSentence2FeatureVectorSequence;
+import cc.mallet.fst.SimpleTagger.*;
 import cc.mallet.pipe.*;
 import cc.mallet.pipe.iterator.*;
 import cc.mallet.topics.*;
