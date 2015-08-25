@@ -132,6 +132,11 @@ public class StanfordNlpWrapper {
 		prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
 	}
 
+	public StanfordNlpWrapper setOption(String key, String value) {
+		prop.setProperty(key, value);
+		return this;
+	}
+
 	public StanfordNlpWrapper loadTokFactory() {
 		tokenizerFactory = PTBTokenizer.factory();
 		return this;
