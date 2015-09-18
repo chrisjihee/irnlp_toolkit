@@ -32,9 +32,13 @@ public class OpenNlpWrapper {
 	public Parser parser;
 	public List<NameFinderME> recognizers;
 
-	public OpenNlpWrapper(String path) throws IOException {
+	public OpenNlpWrapper(String path) {
 		prop = new Properties();
-		prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
+		try {
+			prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public OpenNlpWrapper loadSentDetector() throws IOException {
@@ -66,6 +70,21 @@ public class OpenNlpWrapper {
 		System.err.printf("Loading phrase chunker from %s ... ", model_path);
 		chunker = new ChunkerME(new ChunkerModel(JFile.asStream(model_path)));
 		System.err.println("done");
+		return this;
+	}
+
+	public OpenNlpWrapper loadChunker(boolean verbose) {
+		String model_path = prop.getProperty("chunk.model");
+		if (verbose)
+			System.err.printf("Loading phrase chunker from %s ... ", model_path);
+		try {
+			chunker = new ChunkerME(new ChunkerModel(JFile.asStream(model_path)));
+		} catch (IOException e) {
+			if (verbose)
+				e.printStackTrace();
+		}
+		if (verbose)
+			System.err.println("done");
 		return this;
 	}
 
