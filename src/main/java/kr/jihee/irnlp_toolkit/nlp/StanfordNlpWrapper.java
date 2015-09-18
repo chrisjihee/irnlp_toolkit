@@ -29,6 +29,7 @@ import edu.stanford.nlp.util.*;
 import kr.jihee.text_toolkit.io.*;
 import kr.jihee.text_toolkit.job.*;
 import kr.jihee.text_toolkit.lang.*;
+import kr.jihee.text_toolkit.lang.JFunction.Thrower;
 
 /**
  * Wrapper of Stanford CoreNLP 3.5.0<br>
@@ -127,9 +128,14 @@ public class StanfordNlpWrapper {
 		}
 	}
 
-	public StanfordNlpWrapper(String path) throws IOException {
+	public StanfordNlpWrapper(String path) {
 		prop = new Properties();
-		prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
+		try {
+			prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
+		} catch (IOException e) {
+			e.printStackTrace();
+			Thrower.throwing(e);
+		}
 	}
 
 	public StanfordNlpWrapper setOption(String key, String value) {
@@ -144,6 +150,14 @@ public class StanfordNlpWrapper {
 
 	public StanfordNlpWrapper loadPosTagger() {
 		tagger = new MaxentTagger(prop.getProperty("pos.model"));
+		return this;
+	}
+
+	public StanfordNlpWrapper loadPosTaggerQ() {
+		PrintStream pre = System.err;
+		System.setErr(new PrintStream(new ByteArrayOutputStream()));
+		tagger = new MaxentTagger(prop.getProperty("pos.model"));
+		System.setErr(pre);
 		return this;
 	}
 

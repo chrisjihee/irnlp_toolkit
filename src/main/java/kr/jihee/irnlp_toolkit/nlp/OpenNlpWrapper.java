@@ -7,6 +7,7 @@ import java.io.*;
 import java.util.*;
 
 import kr.jihee.text_toolkit.io.*;
+import kr.jihee.text_toolkit.lang.JFunction.Thrower;
 import opennlp.tools.chunker.*;
 import opennlp.tools.cmdline.parser.*;
 import opennlp.tools.namefind.*;
@@ -38,6 +39,7 @@ public class OpenNlpWrapper {
 			prop.loadFromXML(new FileInputStream(JFile.asFile(path)));
 		} catch (IOException e) {
 			e.printStackTrace();
+			Thrower.throwing(e);
 		}
 	}
 
