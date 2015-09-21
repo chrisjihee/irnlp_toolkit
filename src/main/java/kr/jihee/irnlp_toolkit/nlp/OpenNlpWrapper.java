@@ -75,18 +75,14 @@ public class OpenNlpWrapper {
 		return this;
 	}
 
-	public OpenNlpWrapper loadChunker(boolean verbose) {
+	public OpenNlpWrapper loadChunkerQ() {
 		String model_path = prop.getProperty("chunk.model");
-		if (verbose)
-			System.err.printf("Loading phrase chunker from %s ... ", model_path);
 		try {
 			chunker = new ChunkerME(new ChunkerModel(JFile.asStream(model_path)));
 		} catch (IOException e) {
-			if (verbose)
-				e.printStackTrace();
+			e.printStackTrace();
+			Thrower.throwing(e);
 		}
-		if (verbose)
-			System.err.println("done");
 		return this;
 	}
 
@@ -109,8 +105,13 @@ public class OpenNlpWrapper {
 		return this;
 	}
 
-	public OpenNlpWrapper loadAll() throws IOException {
-		loadAll("ssplit, tokenize, pos, chunk, parse, ner");
+	public OpenNlpWrapper loadAllQ() {
+		try {
+			loadAll("ssplit, tokenize, pos, chunk, parse, ner");
+		} catch (IOException e) {
+			e.printStackTrace();
+			Thrower.throwing(e);
+		}
 		return this;
 	}
 
