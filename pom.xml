@@ -19,7 +19,7 @@
 		<dependency>
 			<groupId>kr.jihee</groupId>
 			<artifactId>text_toolkit</artifactId>
-			<version>0.9.6</version>
+			<version>0.9.7</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sf.simmetrics</groupId>
