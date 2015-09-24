@@ -3,31 +3,51 @@
  */
 package kr.jihee.irnlp_toolkit.nlp;
 
-import java.io.*;
-import java.util.*;
-import java.util.stream.*;
-import java.util.stream.Stream.*;
-import java.util.zip.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
+import java.util.zip.ZipFile;
 
-import com.clearnlp.component.dep.*;
-import com.clearnlp.component.pos.*;
-import com.clearnlp.component.pred.*;
-import com.clearnlp.component.role.*;
-import com.clearnlp.component.srl.*;
-import com.clearnlp.dependency.*;
-import com.clearnlp.dependency.srl.*;
-import com.clearnlp.nlp.*;
-import com.clearnlp.reader.*;
-import com.clearnlp.segmentation.*;
-import com.clearnlp.tokenization.*;
-import com.clearnlp.util.pair.*;
+import com.clearnlp.component.dep.AbstractDEPParser;
+import com.clearnlp.component.pos.AbstractPOSTagger;
+import com.clearnlp.component.pred.AbstractPredicateIdentifier;
+import com.clearnlp.component.role.AbstractRolesetClassifier;
+import com.clearnlp.component.srl.AbstractSRLabeler;
+import com.clearnlp.dependency.DEPArc;
+import com.clearnlp.dependency.DEPLib;
+import com.clearnlp.dependency.DEPNode;
+import com.clearnlp.dependency.DEPTree;
+import com.clearnlp.dependency.srl.SRLArc;
+import com.clearnlp.dependency.srl.SRLLib;
+import com.clearnlp.nlp.NLPGetter;
+import com.clearnlp.nlp.NLPMode;
+import com.clearnlp.reader.AbstractReader;
+import com.clearnlp.segmentation.AbstractSegmenter;
+import com.clearnlp.tokenization.AbstractTokenizer;
+import com.clearnlp.util.pair.ObjectDoublePair;
 
-import edu.stanford.nlp.ling.*;
-import edu.stanford.nlp.trees.*;
-import kr.jihee.text_toolkit.io.*;
-import kr.jihee.text_toolkit.lang.*;
-import kr.jihee.text_toolkit.lang.JList.*;
-import kr.jihee.text_toolkit.lang.JObject.*;
+import edu.stanford.nlp.ling.IndexedWord;
+import edu.stanford.nlp.ling.StringLabel;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.ling.Word;
+import edu.stanford.nlp.trees.GrammaticalRelation;
+import edu.stanford.nlp.trees.TreeCoreAnnotations;
+import edu.stanford.nlp.trees.TreeGraphNode;
+import edu.stanford.nlp.trees.TypedDependency;
+import kr.jihee.text_toolkit.io.JFile;
+import kr.jihee.text_toolkit.lang.JList.GList;
+import kr.jihee.text_toolkit.lang.JMap;
+import kr.jihee.text_toolkit.lang.JObject.StrCaster;
+import kr.jihee.text_toolkit.lang.JString;
+import kr.jihee.text_toolkit.util.JLib;
 
 /**
  * Wrapper of ClearNLP 2.0.2<br>
@@ -139,6 +159,7 @@ public class ClearNlpWrapper {
 
 	public ClearNlpWrapper loadAll(String annotator_spec) throws IOException {
 		List<String> annotators = Arrays.asList(annotator_spec.toLowerCase().replaceAll("\\s", "").split(","));
+		JLib.setLoggerOff();
 		if (annotators.contains("tokenize"))
 			loadTokenizer();
 		if (annotators.contains("ssplit"))
@@ -149,6 +170,7 @@ public class ClearNlpWrapper {
 			loadDepParser();
 		if (annotators.contains("srl"))
 			loadSrlLabeler();
+		JLib.setLoggerOn();
 		return this;
 	}
 

@@ -1,24 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration>
-	<Properties>
-		<Property name="logpath">logs/rolling</Property>
-	</Properties>
 	<Loggers>
 		<Root level="DEBUG">
-			<AppenderRef ref="CONSOLE" level="INFO"/>
-			<AppenderRef ref="ROLLING" level="DEBUG"/>
+			<AppenderRef ref="CONSOLE"/>
 		</Root>
 	</Loggers>
 	<Appenders>
 		<Console name="CONSOLE" target="SYSTEM_OUT">
-			<PatternLayout pattern="[%5p|%d{HH:mm:ss}] %m%n"/>
+			<PatternLayout pattern="[%5p|%d{HH:mm:ss}] %m (%F:%L)%n"/>
 		</Console>
-		<RollingFile name="ROLLING" fileName="${logpath}.log" filePattern="${logpath}.%d{yyyyMMdd}.%i.log.gz">
-			<PatternLayout pattern="[%5p|%d{HH:mm:ss}] %m%n"/>
-			<Policies>
-				<TimeBasedTriggeringPolicy/>
-				<SizeBasedTriggeringPolicy size="500MB"/>
-			</Policies>
-		</RollingFile>
 	</Appenders>
 </Configuration>

@@ -3,33 +3,70 @@
  */
 package kr.jihee.irnlp_toolkit.nlp;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeSet;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
 
-import edu.stanford.nlp.dcoref.*;
-import edu.stanford.nlp.dcoref.CorefChain.*;
-import edu.stanford.nlp.dcoref.CorefCoreAnnotations.*;
-import edu.stanford.nlp.ling.*;
-import edu.stanford.nlp.ling.CoreAnnotations.*;
-import edu.stanford.nlp.parser.*;
-import edu.stanford.nlp.parser.lexparser.*;
+import edu.stanford.nlp.dcoref.CorefChain;
+import edu.stanford.nlp.dcoref.CorefChain.CorefMention;
+import edu.stanford.nlp.dcoref.CorefCoreAnnotations.CorefChainAnnotation;
+import edu.stanford.nlp.dcoref.CorefCoreAnnotations.CorefClusterIdAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations;
+import edu.stanford.nlp.ling.CoreAnnotations.BeginIndexAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.EndIndexAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.IndexedWord;
+import edu.stanford.nlp.ling.TaggedWord;
+import edu.stanford.nlp.ling.Word;
+import edu.stanford.nlp.parser.KBestViterbiParser;
+import edu.stanford.nlp.parser.lexparser.Debinarizer;
+import edu.stanford.nlp.parser.lexparser.EnglishTreebankParserParams;
+import edu.stanford.nlp.parser.lexparser.ExhaustivePCFGParser;
+import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.parser.lexparser.Options;
-import edu.stanford.nlp.pipeline.*;
-import edu.stanford.nlp.process.*;
-import edu.stanford.nlp.semgraph.*;
-import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.*;
-import edu.stanford.nlp.tagger.maxent.*;
-import edu.stanford.nlp.time.*;
-import edu.stanford.nlp.trees.*;
-import edu.stanford.nlp.trees.GrammaticalRelation.*;
-import edu.stanford.nlp.trees.TreeCoreAnnotations.*;
-import edu.stanford.nlp.util.*;
-import kr.jihee.text_toolkit.io.*;
-import kr.jihee.text_toolkit.job.*;
-import kr.jihee.text_toolkit.lang.*;
+import edu.stanford.nlp.pipeline.Annotation;
+import edu.stanford.nlp.pipeline.AnnotationPipeline;
+import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.process.TokenizerFactory;
+import edu.stanford.nlp.semgraph.SemanticGraph;
+import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
+import edu.stanford.nlp.tagger.maxent.MaxentTagger;
+import edu.stanford.nlp.time.SUTimeMain;
+import edu.stanford.nlp.trees.GrammaticalRelation;
+import edu.stanford.nlp.trees.GrammaticalRelation.Language;
+import edu.stanford.nlp.trees.GrammaticalStructure;
+import edu.stanford.nlp.trees.GrammaticalStructureFactory;
+import edu.stanford.nlp.trees.PennTreebankLanguagePack;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
+import edu.stanford.nlp.trees.TreePrint;
+import edu.stanford.nlp.trees.TreebankLanguagePack;
+import edu.stanford.nlp.trees.TypedDependency;
+import edu.stanford.nlp.util.CoreMap;
+import edu.stanford.nlp.util.Filters;
+import edu.stanford.nlp.util.ScoredObject;
+import kr.jihee.text_toolkit.io.JFile;
+import kr.jihee.text_toolkit.io.JSystem;
+import kr.jihee.text_toolkit.job.JobManager;
 import kr.jihee.text_toolkit.lang.JFunction.Thrower;
+import kr.jihee.text_toolkit.lang.JString;
 
 /**
  * Wrapper of Stanford CoreNLP 3.5.0<br>
@@ -154,10 +191,9 @@ public class StanfordNlpWrapper {
 	}
 
 	public StanfordNlpWrapper loadPosTaggerQ() {
-		PrintStream pre = System.err;
-		System.setErr(new PrintStream(new ByteArrayOutputStream()));
+		JSystem.setErrOff();
 		tagger = new MaxentTagger(prop.getProperty("pos.model"));
-		System.setErr(pre);
+		JSystem.setErrOn();
 		return this;
 	}
 
@@ -174,8 +210,18 @@ public class StanfordNlpWrapper {
 
 	public StanfordNlpWrapper loadAll(String annotator_spec) {
 		prop.setProperty("annotators", annotator_spec);
+		return loadAll();
+	}
+
+	public StanfordNlpWrapper loadAllQ() {
+		JSystem.setErrOff();
 		annotator = new StanfordCoreNLP(prop);
+		JSystem.setErrOn();
 		return this;
+	}
+
+	public StanfordNlpWrapper loadAllQ(String annotator_spec) {
+		return loadAllQ();
 	}
 
 	public StanfordNlpWrapper loadTimeAnnotator() throws Exception {

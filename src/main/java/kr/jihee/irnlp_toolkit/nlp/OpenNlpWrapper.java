@@ -3,19 +3,31 @@
  */
 package kr.jihee.irnlp_toolkit.nlp;
 
-import java.io.*;
-import java.util.*;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Properties;
 
-import kr.jihee.text_toolkit.io.*;
+import kr.jihee.text_toolkit.io.JFile;
 import kr.jihee.text_toolkit.lang.JFunction.Thrower;
-import opennlp.tools.chunker.*;
-import opennlp.tools.cmdline.parser.*;
-import opennlp.tools.namefind.*;
-import opennlp.tools.parser.*;
-import opennlp.tools.postag.*;
-import opennlp.tools.sentdetect.*;
-import opennlp.tools.tokenize.*;
-import opennlp.tools.util.*;
+import opennlp.tools.chunker.ChunkerME;
+import opennlp.tools.chunker.ChunkerModel;
+import opennlp.tools.cmdline.parser.ParserTool;
+import opennlp.tools.namefind.NameFinderME;
+import opennlp.tools.namefind.TokenNameFinderModel;
+import opennlp.tools.parser.Parse;
+import opennlp.tools.parser.Parser;
+import opennlp.tools.parser.ParserFactory;
+import opennlp.tools.parser.ParserModel;
+import opennlp.tools.postag.POSModel;
+import opennlp.tools.postag.POSTaggerME;
+import opennlp.tools.sentdetect.SentenceDetectorME;
+import opennlp.tools.sentdetect.SentenceModel;
+import opennlp.tools.tokenize.TokenizerME;
+import opennlp.tools.tokenize.TokenizerModel;
+import opennlp.tools.util.Span;
 
 /**
  * Wrapper of OpenNLP 1.5.3<br>
@@ -43,39 +55,40 @@ public class OpenNlpWrapper {
 		}
 	}
 
-	public OpenNlpWrapper loadSentDetector() throws IOException {
+	public OpenNlpWrapper loadSentDetector() {
 		String model_path = prop.getProperty("sent.model");
-		System.err.printf("Loading sentence detector from %s ... ", model_path);
-		detector = new SentenceDetectorME(new SentenceModel(JFile.asStream(model_path)));
-		System.err.println("done");
+		try {
+			detector = new SentenceDetectorME(new SentenceModel(JFile.asStream(model_path)));
+		} catch (IOException e) {
+			e.printStackTrace();
+			Thrower.throwing(e);
+		}
 		return this;
 	}
 
-	public OpenNlpWrapper loadTokenizer() throws IOException {
+	public OpenNlpWrapper loadTokenizer() {
 		String model_path = prop.getProperty("tok.model");
-		System.err.printf("Loading tokenizer from %s ... ", model_path);
-		tokenizer = new TokenizerME(new TokenizerModel(JFile.asStream(model_path)));
-		System.err.println("done");
+		try {
+			tokenizer = new TokenizerME(new TokenizerModel(JFile.asStream(model_path)));
+		} catch (IOException e) {
+			e.printStackTrace();
+			Thrower.throwing(e);
+		}
 		return this;
 	}
 
-	public OpenNlpWrapper loadPosTagger() throws IOException {
+	public OpenNlpWrapper loadPosTagger() {
 		String model_path = prop.getProperty("pos.model");
-		System.err.printf("Loading POS tagger from %s ... ", model_path);
-		tagger = new POSTaggerME(new POSModel(JFile.asStream(model_path)));
-		System.err.println("done");
+		try {
+			tagger = new POSTaggerME(new POSModel(JFile.asStream(model_path)));
+		} catch (IOException e) {
+			e.printStackTrace();
+			Thrower.throwing(e);
+		}
 		return this;
 	}
 
-	public OpenNlpWrapper loadChunker() throws IOException {
-		String model_path = prop.getProperty("chunk.model");
-		System.err.printf("Loading phrase chunker from %s ... ", model_path);
-		chunker = new ChunkerME(new ChunkerModel(JFile.asStream(model_path)));
-		System.err.println("done");
-		return this;
-	}
-
-	public OpenNlpWrapper loadChunkerQ() {
+	public OpenNlpWrapper loadChunker() {
 		String model_path = prop.getProperty("chunk.model");
 		try {
 			chunker = new ChunkerME(new ChunkerModel(JFile.asStream(model_path)));
@@ -86,31 +99,27 @@ public class OpenNlpWrapper {
 		return this;
 	}
 
-	public OpenNlpWrapper loadLexParser() throws IOException {
+	public OpenNlpWrapper loadLexParser() {
 		String model_path = prop.getProperty("parse.model");
-		System.err.printf("Loading parser from %s ... ", model_path);
-		parser = ParserFactory.create(new ParserModel(JFile.asStream(model_path)));
-		System.err.println("done");
-		return this;
-	}
-
-	public OpenNlpWrapper loadEntityRecognizers() throws IOException {
-		recognizers = new ArrayList<NameFinderME>();
-		for (String key : Arrays.asList("ner.person.model", "ner.organization.model", "ner.location.model", "ner.date.model", "ner.time.model", "ner.money.model", "ner.percentage.model")) {
-			String model_path = prop.getProperty(key);
-			System.err.printf("Loading named entity recognizer from %s ... ", model_path);
-			recognizers.add(new NameFinderME(new TokenNameFinderModel(JFile.asStream(model_path))));
-			System.err.println("done");
+		try {
+			parser = ParserFactory.create(new ParserModel(JFile.asStream(model_path)));
+		} catch (IOException e) {
+			e.printStackTrace();
+			Thrower.throwing(e);
 		}
 		return this;
 	}
 
-	public OpenNlpWrapper loadAllQ() {
-		try {
-			loadAll("ssplit, tokenize, pos, chunk, parse, ner");
-		} catch (IOException e) {
-			e.printStackTrace();
-			Thrower.throwing(e);
+	public OpenNlpWrapper loadEntityRecognizers() {
+		recognizers = new ArrayList<NameFinderME>();
+		for (String key : Arrays.asList("ner.person.model", "ner.organization.model", "ner.location.model", "ner.date.model", "ner.time.model", "ner.money.model", "ner.percentage.model")) {
+			String model_path = prop.getProperty(key);
+			try {
+				recognizers.add(new NameFinderME(new TokenNameFinderModel(JFile.asStream(model_path))));
+			} catch (IOException e) {
+				e.printStackTrace();
+				Thrower.throwing(e);
+			}
 		}
 		return this;
 	}
